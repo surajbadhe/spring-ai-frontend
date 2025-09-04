@@ -1,52 +1,13 @@
-/* .App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-} */
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #f0f2f5;
-  color: #333;
+  background: linear-gradient(135deg, #1f1f2e 0%, #0a0a0f 100%);
+  color: #e0e0e0;
 }
 
+/* Base container for the whole app */
 .app-container {
   display: flex;
   flex-direction: column;
@@ -57,75 +18,116 @@ body {
   box-sizing: border-box;
 }
 
+/* Header styling */
 .app-header {
-  margin-bottom: 20px;
-  color: #007bff;
+  margin-bottom: 30px;
+  text-align: center;
 }
 
+.app-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #64ffda; /* A bright, accent color for the title */
+  text-shadow: 0 0 10px rgba(100, 255, 218, 0.4);
+}
+
+/* Chat interface styling */
 .chat-interface {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  background: rgba(30, 30, 45, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   width: 100%;
   max-width: 800px;
-  padding: 20px;
+  padding: 30px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  border: 1px solid rgba(100, 255, 218, 0.2);
 }
 
+/* Output area for displaying responses */
 .output-area {
-  min-height: 200px;
+  min-height: 250px;
   padding: 15px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   overflow-y: auto;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  color: #ffffff;
 }
 
+/* Pre-formatted text styling for chat output */
 pre {
   white-space: pre-wrap;
   word-wrap: break-word;
-  font-family: monospace;
+  font-family: 'Fira Code', monospace; /* A more "programmer-like" font */
+  margin: 0;
+  line-height: 1.6;
 }
 
+/* Input area for user prompts */
 .input-area {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 15px;
 }
 
 .prompt-input {
   flex-grow: 1;
-  padding: 12px 15px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  font-size: 16px;
+  padding: 15px 20px;
+  border-radius: 10px;
+  border: 1px solid rgba(100, 255, 218, 0.3);
+  background-color: #2a2a3a;
+  color: #e0e0e0;
+  font-size: 1rem;
   resize: vertical;
-  min-height: 50px;
+  min-height: 60px;
+  transition: all 0.3s;
 }
 
+.prompt-input:focus {
+  outline: none;
+  border-color: #64ffda;
+  box-shadow: 0 0 8px rgba(100, 255, 218, 0.6);
+}
+
+/* Button styling */
 .submit-button {
-  padding: 12px 25px;
-  background-color: #007bff;
-  color: white;
+  padding: 15px 30px;
+  background: #64ffda;
+  color: #000;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(100, 255, 218, 0.4);
 }
 
 .submit-button:hover:not(:disabled) {
-  background-color: #0056b3;
+  background: #3e9886;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(100, 255, 218, 0.6);
 }
 
 .submit-button:disabled {
-  background-color: #ccc;
+  background-color: #4a4a58;
+  color: #888;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .loading-message {
   text-align: center;
-  color: #777;
+  color: #64ffda;
   font-style: italic;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
 }
