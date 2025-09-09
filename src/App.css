@@ -1,3 +1,70 @@
+.info-icon {
+  position: relative;
+  display: inline-block;
+}
+.info-tooltip {
+  transition: visibility 0.2s;
+  visibility: hidden;
+  background: #222;
+  color: #fff;
+  text-align: left;
+  border-radius: 6px;
+  padding: 10px;
+  position: absolute;
+  z-index: 1;
+  left: 30px;
+  top: -10px;
+  width: 260px;
+  font-size: 0.95em;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  border: 1px solid #64ffda;
+}
+.info-icon:hover .info-tooltip {
+  visibility: visible;
+}
+.info-tooltip::before {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: -8px;
+  border-width: 8px;
+  border-style: solid;
+  border-color: transparent #64ffda transparent transparent;
+}
+/* Info icon and tooltip styling */
+.info-icon:hover .info-tooltip {
+  visibility: visible;
+}
+.info-tooltip {
+  transition: visibility 0.2s;
+}
+/* Stop button styling */
+.stop-button {
+  padding: 15px 20px;
+  background: #ff5252;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-left: 10px;
+  box-shadow: 0 4px 15px rgba(255, 82, 82, 0.3);
+}
+
+.stop-button:hover:not(:disabled) {
+  background: #c62828;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 82, 82, 0.5);
+}
+
+.stop-button:disabled {
+  background-color: #4a4a58;
+  color: #888;
+  cursor: not-allowed;
+  box-shadow: none;
+}
 body {
   margin: 0;
   font-family: 'Inter', sans-serif;
@@ -27,7 +94,7 @@ body {
 .app-header h1 {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #64ffda; /* A bright, accent color for the title */
+  color: #64ffda;
   text-shadow: 0 0 10px rgba(100, 255, 218, 0.4);
 }
 
@@ -37,23 +104,54 @@ body {
   backdrop-filter: blur(10px);
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  width: 100%;
-  max-width: 800px;
+  width: 95vw;
+  max-width: 1200px;
   padding: 30px;
   display: flex;
   flex-direction: column;
   border: 1px solid rgba(100, 255, 218, 0.2);
 }
 
-/* Output area for displaying responses */
-.output-area {
-  min-height: 250px;
-  padding: 15px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  overflow-y: auto;
+/* Container for the LLM output boxes */
+.llm-output-container {
+  display: flex;
+  gap: 20px;
+  width: 100%;
   margin-bottom: 20px;
+  align-items: stretch;
+}
+
+/* Individual LLM output box with a fixed width */
+.llm-output-box {
+  flex: 1 1 0;
+  min-width: 0;
+  background: rgba(30, 30, 45, 0.8);
+  overflow-wrap: break-word;
+  word-break: break-word;
+  max-width: 100%;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(100, 255, 218, 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.llm-output-box h2 {
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  color: #64ffda;
+}
+
+/* Output area for displaying responses with fixed height and scrolling */
+.output-area {
+  height: 400px; 
+  overflow-y: auto; 
+  flex-grow: 1;
   background-color: rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
+  padding: 15px;
+  border-radius: 8px;
   color: #ffffff;
 }
 
@@ -61,7 +159,7 @@ body {
 pre {
   white-space: pre-wrap;
   word-wrap: break-word;
-  font-family: 'Fira Code', monospace; /* A more "programmer-like" font */
+  font-family: 'Fira Code', monospace;
   margin: 0;
   line-height: 1.6;
 }
@@ -117,6 +215,28 @@ pre {
   color: #888;
   cursor: not-allowed;
   box-shadow: none;
+}
+
+.clear-button {
+  padding: 15px 20px;
+  background: none;
+  color: #e0e0e0;
+  border: 1px solid #64ffda;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.clear-button:hover:not(:disabled) {
+  background: rgba(100, 255, 218, 0.2);
+}
+
+.clear-button:disabled {
+  border-color: #4a4a58;
+  color: #888;
+  cursor: not-allowed;
 }
 
 .loading-message {
