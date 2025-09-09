@@ -173,6 +173,13 @@ const handlePromptSubmit = async () => {
         </div>
         <div className="input-area">
             <div className="mode-select" style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
+                <span className="info-icon" style={{ marginLeft: '10px', cursor: 'pointer', position: 'relative' }}>
+                    <span style={{ fontSize: '1.2em', color: '#64ffda' }}>ⓘ</span>
+                    <span className="info-tooltip">
+                        <b>Stream:</b> See the response as it is generated, useful for long answers or real-time feedback.<br/>
+                        <b>Normal:</b> Get the full response at once, usually better formatted.
+                    </span>
+                </span>
                 <label>
                     <input
                         type="radio"
@@ -193,13 +200,7 @@ const handlePromptSubmit = async () => {
                     />
                     Normal
                 </label>
-                <span className="info-icon" style={{ marginLeft: '10px', cursor: 'pointer', position: 'relative' }}>
-                    <span style={{ fontSize: '1.2em', color: '#64ffda' }}>ⓘ</span>
-                    <span className="info-tooltip">
-                        <b>Stream:</b> See the response as it is generated, useful for long answers or real-time feedback.<br/>
-                        <b>Normal:</b> Get the full response at once, usually better formatted.
-                    </span>
-                </span>
+                
             </div>
             <textarea
                 className="prompt-input"
