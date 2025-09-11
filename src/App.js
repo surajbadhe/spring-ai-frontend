@@ -41,7 +41,15 @@ function App() {
     const [isLoading, setIsLoading] = useState(false);
     const [chatMode, setChatMode] = useState('stream'); // 'stream' or 'normal'
     const [isStopped, setIsStopped] = useState(false);
+    const [imageFile, setImageFile] = useState(null);
+    const [lastPrompt, setLastPrompt] = useState(''); // Track last submitted prompt for display
     const abortControllers = useRef({ ollama: null, gemini: null });
+    // Ref for file input to reset its value
+    const fileInputRef = useRef();
+
+    const handleImageChange = (e) => {
+        setImageFile(e.target.files[0]);
+    };
 
 
 const handlePromptSubmit = async () => {
@@ -51,7 +59,29 @@ const handlePromptSubmit = async () => {
     setIsStopped(false);
 
     const promptMessage = prompt;
+    setLastPrompt(promptMessage); // Save for display
     setPrompt('');
+
+    // If image is selected, send to image endpoint and skip normal chat
+    if (imageFile) {
+        const formData = new FormData();
+        formData.append('message', promptMessage);
+        formData.append('image', imageFile);
+        try {
+            const res = await fetch('http://localhost:8080/gemini/chat/image', {
+                method: 'POST',
+                body: formData,
+            });
+            setGeminiResponse(await res.text());
+        } catch (error) {
+            setGeminiResponse(`Error: ${error.message}`);
+        } finally {
+            setIsLoading(false);
+            setImageFile(null); // Clear image after response
+            if (fileInputRef.current) fileInputRef.current.value = ""; // Reset file input
+        }
+        return;
+    }
 
     try {
         if (chatMode === 'stream') {
@@ -150,12 +180,16 @@ const handlePromptSubmit = async () => {
       if (abortControllers.current.gemini) abortControllers.current.gemini.abort();
   };
   return (
-    <div className="app-container">
-      <header className="app-header">
-        <h1>Spring AI: Chat with Ollama & Gemini</h1>
-      </header>
-      <main className="chat-interface">
-        <div className="llm-output-container">
+        <div className="app-container">
+            <header className="app-header">
+                <h1>Spring AI: Chat with Ollama & Gemini</h1>
+            </header>
+            <main className="chat-interface">
+                {/* Show only the prompt input above output */}
+                <div style={{ width: '100%', maxWidth: 900, margin: '0 auto 18px auto', padding: '12px 24px', background: '#23272f', borderRadius: 10, color: '#fff', fontSize: 18, boxShadow: '0 1px 6px rgba(0,0,0,0.08)' }}>
+                    <b>Input:</b> <span style={{ color: '#64ffda' }}>{prompt || lastPrompt}</span>
+                </div>
+                <div className="llm-output-container">
           <div className="llm-output-box">
               <h2>Ollama</h2>
               <div className="output-area">
@@ -171,16 +205,17 @@ const handlePromptSubmit = async () => {
               </div>
           </div>
         </div>
-        <div className="input-area">
-            <div className="mode-select" style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
-                <span className="info-icon" style={{ marginLeft: '10px', cursor: 'pointer', position: 'relative' }}>
+    <div className="input-area" style={{ width: '100%', maxWidth: 900, margin: '30px auto', padding: 24, background: '#222831', borderRadius: 16, boxShadow: '0 2px 12px rgba(0,0,0,0.12)', display: 'flex', flexDirection: 'column', gap: 18 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap', marginBottom: 8 }}>
+                <span className="info-icon" style={{ cursor: 'pointer', position: 'relative' }}>
                     <span style={{ fontSize: '1.2em', color: '#64ffda' }}>ⓘ</span>
                     <span className="info-tooltip">
                         <b>Stream:</b> See the response as it is generated, useful for long answers or real-time feedback.<br/>
                         <b>Normal:</b> Get the full response at once, usually better formatted.
                     </span>
                 </span>
-                <label>
+                <label style={{ fontWeight: 500, color: '#fff', display: 'flex', alignItems: 'center', gap: 4 }}>
                     <input
                         type="radio"
                         value="stream"
@@ -190,7 +225,7 @@ const handlePromptSubmit = async () => {
                     />
                     Stream
                 </label>
-                <label style={{ marginLeft: '15px' }}>
+                <label style={{ fontWeight: 500, color: '#fff', display: 'flex', alignItems: 'center', gap: 4 }}>
                     <input
                         type="radio"
                         value="normal"
@@ -200,37 +235,57 @@ const handlePromptSubmit = async () => {
                     />
                     Normal
                 </label>
-                
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', gap: 8 }}>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        disabled={isLoading}
+                        style={{ color: '#fff', background: '#23272f', border: 'none', fontSize: 15 }}
+                        ref={fileInputRef}
+                    />
+                    {imageFile && <span style={{ color: '#64ffda', fontSize: 13 }}>{imageFile.name}</span>}
+                </div>
+               
+                {isLoading && chatMode === 'stream' && (
+                    <button 
+                        className="stop-button"
+                        onClick={handleStop}
+                        style={{ padding: '8px 18px', borderRadius: 8, background: '#ff1744', color: '#fff', border: 'none', fontWeight: 500, fontSize: 15, cursor: 'pointer' }}
+                    >
+                        Stop
+                    </button>
+                )}
             </div>
-            <textarea
-                className="prompt-input"
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                placeholder="Ask me something?"
-                disabled={isLoading}
-            />
-            <button 
-                className="clear-button"
-                onClick={handleClear}
-                disabled={isLoading}
-            >
-                Clear
-            </button>
-            <button 
-                className="submit-button" 
-                onClick={handlePromptSubmit} 
-                disabled={isLoading || !prompt}
-            >
-                {isLoading ? '...' : 'Send'}
-            </button>
-            {isLoading && chatMode === 'stream' && (
-                <button 
-                    className="stop-button"
-                    onClick={handleStop}
-                >
-                    Stop
-                </button>
-            )}
+            <div style={{ display: 'flex', gap: 16, width: '100%' }}>
+                <textarea
+                    className="prompt-input"
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    placeholder="Ask me something?"
+                    disabled={isLoading}
+                    style={{ flex: 1, minHeight: 60, fontSize: 16, borderRadius: 8, border: '1px solid #393e46', padding: 10, background: '#23272f', color: '#fff', resize: 'vertical' }}
+                />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, justifyContent: 'center', alignItems: 'flex-end' }}>
+                    <button 
+                        className="clear-button"
+                        onClick={handleClear}
+                        disabled={isLoading}
+                        style={{ padding: '8px 18px', borderRadius: 8, background: '#393e46', color: '#fff', border: 'none', fontWeight: 500, fontSize: 15, cursor: 'pointer', marginBottom: 8 }}
+                    >
+                        Clear
+                    </button>
+                    <button 
+                        className="submit-button" 
+                        onClick={handlePromptSubmit} 
+                        disabled={isLoading || !prompt}
+                        style={{ padding: '8px 18px', borderRadius: 8, background: '#64ffda', color: '#23272f', border: 'none', fontWeight: 500, fontSize: 15, cursor: isLoading || !prompt ? 'not-allowed' : 'pointer' }}
+                    >
+                        {isLoading ? '...' : 'Send'}
+                    </button>
+                </div>
+            </div>
+        </div>
         </div>
 
       </main>
